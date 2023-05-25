@@ -1,0 +1,168 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+enum MaterialPereti {
+    BCA, CARAMIDA
+}
+
+class Cladire {
+    private int numarEtaje;
+    private String dataFinalizare;
+    private MaterialPereti materialPereti;
+
+    public Cladire(int numarEtaje, String dataFinalizare, MaterialPereti materialPereti) {
+        this.numarEtaje = numarEtaje;
+        this.dataFinalizare = dataFinalizare;
+        this.materialPereti = materialPereti;
+    }
+
+    public int getNumarEtaje() {
+        return numarEtaje;
+    }
+
+    public void setNumarEtaje(int numarEtaje) {
+        this.numarEtaje = numarEtaje;
+    }
+
+    public String getDataFinalizare() {
+        return dataFinalizare;
+    }
+
+    public void setDataFinalizare(String dataFinalizare) {
+        this.dataFinalizare = dataFinalizare;
+    }
+
+    public MaterialPereti getMaterialPereti() {
+        return materialPereti;
+    }
+
+    public void setMaterialPereti(MaterialPereti materialPereti) {
+        this.materialPereti = materialPereti;
+    }
+
+    @Override
+    public String toString() {
+        return "Numar etaje: " + numarEtaje + ", Data finalizare: " + dataFinalizare + ", Material pereti: " + materialPereti;
+    }
+}
+
+class Casa extends Cladire {
+    private double suprafataUtila;
+    private double suprafataTeren;
+
+    public Casa(int numarEtaje, String dataFinalizare, MaterialPereti materialPereti, double suprafataUtila, double suprafataTeren) {
+        super(numarEtaje, dataFinalizare, materialPereti);
+        this.suprafataUtila = suprafataUtila;
+        this.suprafataTeren = suprafataTeren;
+    }
+
+    public double getSuprafataUtila() {
+        return suprafataUtila;
+    }
+
+    public void setSuprafataUtila(double suprafataUtila) {
+        this.suprafataUtila = suprafataUtila;
+    }
+
+    public double getSuprafataTeren() {
+        return suprafataTeren;
+    }
+
+    public void setSuprafataTeren(double suprafataTeren) {
+        this.suprafataTeren = suprafataTeren;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", Suprafata utila: " + suprafataUtila + ", Suprafata teren: " + suprafataTeren;
+    }
+}
+
+class Bloc extends Cladire {
+    private int numarApartamente;
+
+    public Bloc(int numarEtaje, String dataFinalizare, MaterialPereti materialPereti, int numarApartamente) {
+        super(numarEtaje, dataFinalizare, materialPereti);
+        this.numarApartamente = numarApartamente;
+    }
+
+    public int getNumarApartamente() {
+        return numarApartamente;
+    }
+
+    public void setNumarApartamente(int numarApartamente) {
+        this.numarApartamente = numarApartamente;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", Numar apartamente: " + numarApartamente;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        List<Cladire> cladiri = new ArrayList<>();
+        String csvFile = "input.csv";
+        String line;
+        String csvSplitBy = ",";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(csvSplitBy);
+                if (data.length == 7) {
+                    String tipCladire = data[0];
+                    int numarEtaje = Integer.parseInt(data[1]);
+                    String dataFinalizare = data[2];
+                    MaterialPereti materialPereti = MaterialPereti.valueOf(data[3]);
+                    if (tipCladire.equals("Casa")) {
+                        double suprafataUtila = Double.parseDouble(data[4]);
+                        double suprafataTeren = Double.parseDouble(data[5]);
+                        Casa casa = new Casa(numarEtaje, dataFinalizare, materialPereti, suprafataUtila, suprafataTeren);
+                        cladiri.add(casa);
+                    } else if (tipCladire.equals("Bloc")) {
+                        int numarApartamente = Integer.parseInt(data[6]);
+                        Bloc bloc = new Bloc(numarEtaje, dataFinalizare, materialPereti, numarApartamente);
+                        cladiri.add(bloc);
+                    }
+                }
+            }
+
+            // Afisare colectie utilizand referinte la metode
+            cladiri.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Citire de la tastatura a numarului de ani si metrilor patrati
+        Scanner scanner = new Scanner(System.in);
+
+        int numarAni = 0;
+        double suprafataMetriPatrati = 0.0;
+
+        boolean inputValid = false;
+
+        while (!inputValid) {
+            try {
+                System.out.print("Introduceti numarul de ani: ");
+                numarAni = Integer.parseInt(scanner.nextLine());
+
+                System.out.print("Introduceti suprafata in metri patrati: ");
+                suprafataMetriPatrati = Double.parseDouble(scanner.nextLine());
+
+                inputValid = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Introduceti valori numerice valide!");
+            }
+        }
+
+        scanner.close();
+
+        System.out.println("Numarul de ani introdus: " + numarAni);
+        System.out.println("Suprafata introdusa in metri patrati: " + suprafataMetriPatrati);
+    }
+}
